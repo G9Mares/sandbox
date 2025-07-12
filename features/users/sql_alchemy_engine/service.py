@@ -3,7 +3,8 @@ from .model import Users
 
 controller = Postgres_Controller()
 
-
-def service_get_users():
-    usarios = controller.get_all(Users)
-    return usarios
+class User_service:
+    
+    def service_get_users(self):
+        usarios = controller.get_all(Users)
+        return usarios
