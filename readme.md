@@ -1,4 +1,4 @@
-# Arquteggture
+# Arquiteggture
 
 Basada en Features y funciones, que se joda la hexagonal
 
@@ -16,7 +16,7 @@ Almacena los modulos o entidades que posera tu proyecto, cada carpeta contiene:
         El service sirve para ejecutar todo lo que tenga que ver con la fuente de datos en este caso el controller, aun si ocupa modelos o joins de otras features
     logic?:
         Es donde la va la logica del negocio, es opcional y tiene que ir separado del service
-    test?: es opcional
+    test?: es opcional y deberia ser una carpeta
     routes:
         Es donde se declaran los endpoints
 
@@ -31,5 +31,7 @@ Almacena los modulos o entidades que posera tu proyecto, cada carpeta contiene:
 ## Generales 
 
 No crea los modelos en la base de datos, se requeire que ya existan y hace flata pasar el paremtro de session en el controller de ejemplo por que me dio hueva
+
+by GMares
 
     
