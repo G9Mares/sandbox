@@ -1,5 +1,27 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from functools import wraps
+from sqlalchemy.orm.session import Session
+
+def play_session(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        with self.session_maker() as session:
+            return func(self, session, *args, **kwargs)
+    return wrapper
+
+def transactional(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        with self.session_maker() as session:
+            try:
+                result = func(self, session, *args, **kwargs)
+                session.commit()
+                return result
+            except:
+                session.rollback()
+                return False
+    return wrapper
 
 
 class Postgres_Controller:
@@ -12,22 +34,21 @@ class Postgres_Controller:
             db = 'mi_basedatos',
             ):
         
-        url = f"mysql+pymysql://{usuario}:{passw}@{host}:{puerto}/{db}"
-        self.engine = create_engine(url)
-        self.create_session()
-    
-    def create_session(self):
-        Session = sessionmaker(bind=self.engine)
-        self.session = Session()
+        url = f"postgresql+psycopg2://{usuario}:{passw}@{host}:{puerto}/{db}"
+        self.engine = create_engine(url)    
+        self.session_maker = sessionmaker(bind=self.engine)
+
 
     def create_model(self, Base):
         Base.metadata.create_all(self.engine)
 
 
-    def get_all(self,model):
-        return self.session.query(model).all()
+    @play_session
+    def get_all(self,session:Session ,model):
+        return session.query(model).all()
     
-    def create_record(self, model, info):
+    @transactional
+    def create_record(self, session:Session, model, info):
         new_record = model(**info)
-        self.session.add(new_record)
-        self.session.commit()
+        session.add(new_record)
+        return new_record
